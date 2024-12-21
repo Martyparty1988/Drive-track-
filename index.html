@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveTrack</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffe6e6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff3366;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: #e6004c;
+        }
+
+        .tagline {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .form {
+            max-width: 400px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form input, .form button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form button {
+            background: #ff3366;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form button:hover {
+            background: #e6004c;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #ffcccc;
+        }
+
+        .export-btn {
+            display: block;
+            width: 100%;
+            margin: 20px auto;
+            background: #ff3366;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .export-btn:hover {
+            background: #e6004c;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Drive<span>Track</span></div>
+        <div class="tagline">Your personal mileage tracker</div>
+    </header>
+
+    <div class="form">
+        <input type="number" id="startOdometer" placeholder="Stav kilometrů před jízdou" required>
+        <input type="number" id="endOdometer" placeholder="Stav kilometrů po jízdě" required>
+        <input type="date" id="date" required>
+        <button onclick="addEntry()">Přidat jízdu</button>
+    </div>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Ujeté kilometry</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Záznamy budou dynamicky přidávány -->
+        </tbody>
+    </table>
+    <button class="export-btn" onclick="exportToCSV()">Export do Numbers (CSV)</button>
+
+    <script>
+        let rides = JSON.parse(localStorage.getItem('rides')) || {};
+
+        function addEntry() {
+            const startOdometer = parseFloat(document.getElementById('startOdometer').value);
+            const endOdometer = parseFloat(document.getElementById('endOdometer').value);
+            const date = document.getElementById('date').value;
+
+            if (isNaN(startOdometer) || isNaN(endOdometer) || !date || endOdometer <= startOdometer) {
+                alert('Vyplňte správně všechna pole!');
+                return;
+            }
+
+            const distance = endOdometer - startOdometer;
+
+            if (!rides[date]) {
+                rides[date] = 0;
+            }
+            rides[date] += distance;
+
+            localStorage.setItem('rides', JSON.stringify(rides));
+            renderTable();
+        }
+
+        function renderTable() {
+            const tableBody = document.querySelector('#dataTable tbody');
+            tableBody.innerHTML = '';
+
+            for (const [date, distance] of Object.entries(rides)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${date}</td><td>${distance.toFixed(2)} km</td>`;
+                tableBody.appendChild(row);
+            }
+        }
+
+        function exportToCSV() {
+            let csvContent = 'Datum,Ujeté kilometry\n';
+
+            for (const [date, distance] of Object.entries(rides)) {
+                csvContent += `${date},${distance.toFixed(2)}\n`;
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'kilometry.csv';
+            link.click();
+        }
+
+        window.onload = renderTable;
+    </script>
+</body>
+</html>
