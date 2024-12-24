@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,12 +96,18 @@
         .export-btn:hover {
             background: #e6004c;
         }
+
+        #stats {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">Drive<span>Track</span></div>
-        <div class="tagline">Your personal mileage tracker</div>
+        <div class="tagline">Váš osobní sledovač kilometrů</div>
     </header>
 
     <div class="form">
@@ -115,6 +121,7 @@
             <tr>
                 <th>Datum</th>
                 <th>Ujeté kilometry</th>
+                <th>Akce</th>
             </tr>
         </thead>
         <tbody>
@@ -122,6 +129,11 @@
         </tbody>
     </table>
     <button class="export-btn" onclick="exportToCSV()">Export do Numbers (CSV)</button>
+
+    <div id="stats">
+        <p>Celkem ujeté kilometry: 0 km</p>
+        <p>Průměrná vzdálenost na jízdu: 0 km</p>
+    </div>
 
     <script>
         let rides = JSON.parse(localStorage.getItem('rides')) || {};
@@ -153,9 +165,45 @@
 
             for (const [date, distance] of Object.entries(rides)) {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${date}</td><td>${distance.toFixed(2)} km</td>`;
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${distance.toFixed(2)} km</td>
+                    <td>
+                        <button onclick="editEntry('${date}')">Upravit</button>
+                        <button onclick="deleteEntry('${date}')">Smazat</button>
+                    </td>
+                `;
                 tableBody.appendChild(row);
             }
+
+            calculateStats();
+        }
+
+        function deleteEntry(date) {
+            delete rides[date];
+            localStorage.setItem('rides', JSON.stringify(rides));
+            renderTable();
+        }
+
+        function editEntry(date) {
+            document.getElementById('startOdometer').value = '';
+            document.getElementById('endOdometer').value = rides[date];
+            document.getElementById('date').value = date;
+
+            delete rides[date];
+            localStorage.setItem('rides', JSON.stringify(rides));
+            renderTable();
+        }
+
+        function calculateStats() {
+            const totalDistance = Object.values(rides).reduce((sum, distance) => sum + distance, 0);
+            const rideCount = Object.keys(rides).length;
+            const averageDistance = rideCount > 0 ? (totalDistance / rideCount).toFixed(2) : 0;
+
+            document.getElementById('stats').innerHTML = `
+                <p>Celkem ujeté kilometry: ${totalDistance.toFixed(2)} km</p>
+                <p>Průměrná vzdálenost na jízdu: ${averageDistance} km</p>
+            `;
         }
 
         function exportToCSV() {
