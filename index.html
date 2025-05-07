@@ -44,7 +44,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .form input, .form button {
+        .form input, .form button, .form select {
             width: 100%;
             margin-bottom: 15px;
             padding: 10px;
@@ -114,6 +114,9 @@
         <input type="number" id="startOdometer" placeholder="Stav kilometrů před jízdou" required>
         <input type="number" id="endOdometer" placeholder="Stav kilometrů po jízdě" required>
         <input type="date" id="date" required>
+        <button onclick="useGPS()">Použít GPS</button>
+        <input type="number" id="fuelPrice" placeholder="Cena paliva za litr (Kč)" step="0.01">
+        <input type="number" id="fuelConsumption" placeholder="Spotřeba (l/100km)" step="0.1">
         <button onclick="addEntry()">Přidat jízdu</button>
     </div>
     <table id="dataTable">
@@ -121,6 +124,7 @@
             <tr>
                 <th>Datum</th>
                 <th>Ujeté kilometry</th>
+                <th>Náklady (Kč)</th>
                 <th>Akce</th>
             </tr>
         </thead>
@@ -132,16 +136,21 @@
 
     <div id="stats">
         <p>Celkem ujeté kilometry: 0 km</p>
+        <p>Celkové náklady: 0 Kč</p>
         <p>Průměrná vzdálenost na jízdu: 0 km</p>
+        <p>Průměrné náklady na jízdu: 0 Kč</p>
     </div>
 
     <script>
         let rides = JSON.parse(localStorage.getItem('rides')) || {};
+        let lastOdometer = parseFloat(localStorage.getItem('lastOdometer')) || 0;
 
         function addEntry() {
             const startOdometer = parseFloat(document.getElementById('startOdometer').value);
             const endOdometer = parseFloat(document.getElementById('endOdometer').value);
             const date = document.getElementById('date').value;
+            const fuelPrice = parseFloat(document.getElementById('fuelPrice').value) || 0;
+            const fuelConsumption = parseFloat(document.getElementById('fuelConsumption').value) || 0;
 
             if (isNaN(startOdometer) || isNaN(endOdometer) || !date || endOdometer <= startOdometer) {
                 alert('Vyplňte správně všechna pole!');
@@ -149,13 +158,16 @@
             }
 
             const distance = endOdometer - startOdometer;
+            const cost = (distance / 100) * fuelConsumption * fuelPrice; // Výpočet nákladů
 
             if (!rides[date]) {
-                rides[date] = 0;
+                rides[date] = { distance: 0, cost: 0 };
             }
-            rides[date] += distance;
+            rides[date].distance += distance;
+            rides[date].cost += cost;
 
             localStorage.setItem('rides', JSON.stringify(rides));
+            localStorage.setItem('lastOdometer', endOdometer);
             renderTable();
         }
 
@@ -163,11 +175,12 @@
             const tableBody = document.querySelector('#dataTable tbody');
             tableBody.innerHTML = '';
 
-            for (const [date, distance] of Object.entries(rides)) {
+            for (const [date, data] of Object.entries(rides)) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${date}</td>
-                    <td>${distance.toFixed(2)} km</td>
+                    <td>${data.distance.toFixed(2)} km</td>
+                    <td>${data.cost.toFixed(2)} Kč</td>
                     <td>
                         <button onclick="editEntry('${date}')">Upravit</button>
                         <button onclick="deleteEntry('${date}')">Smazat</button>
@@ -186,9 +199,11 @@
         }
 
         function editEntry(date) {
-            document.getElementById('startOdometer').value = '';
-            document.getElementById('endOdometer').value = rides[date];
+            document.getElementById('startOdometer').value = rides[date].distance > 0 ? (lastOdometer - rides[date].distance) : '';
+            document.getElementById('endOdometer').value = lastOdometer;
             document.getElementById('date').value = date;
+            document.getElementById('fuelPrice').value = '';
+            document.getElementById('fuelConsumption').value = '';
 
             delete rides[date];
             localStorage.setItem('rides', JSON.stringify(rides));
@@ -196,21 +211,25 @@
         }
 
         function calculateStats() {
-            const totalDistance = Object.values(rides).reduce((sum, distance) => sum + distance, 0);
+            const totalDistance = Object.values(rides).reduce((sum, data) => sum + data.distance, 0);
+            const totalCost = Object.values(rides).reduce((sum, data) => sum + data.cost, 0);
             const rideCount = Object.keys(rides).length;
             const averageDistance = rideCount > 0 ? (totalDistance / rideCount).toFixed(2) : 0;
+            const averageCost = rideCount > 0 ? (totalCost / rideCount).toFixed(2) : 0;
 
             document.getElementById('stats').innerHTML = `
                 <p>Celkem ujeté kilometry: ${totalDistance.toFixed(2)} km</p>
+                <p>Celkové náklady: ${totalCost.toFixed(2)} Kč</p>
                 <p>Průměrná vzdálenost na jízdu: ${averageDistance} km</p>
+                <p>Průměrné náklady na jízdu: ${averageCost} Kč</p>
             `;
         }
 
         function exportToCSV() {
-            let csvContent = 'Datum,Ujeté kilometry\n';
+            let csvContent = 'Datum,Ujeté kilometry,Náklady (Kč)\n';
 
-            for (const [date, distance] of Object.entries(rides)) {
-                csvContent += `${date},${distance.toFixed(2)}\n`;
+            for (const [date, data] of Object.entries(rides)) {
+                csvContent += `${date},${data.distance.toFixed(2)},${data.cost.toFixed(2)}\n`;
             }
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -218,6 +237,53 @@
             link.href = URL.createObjectURL(blob);
             link.download = 'kilometry.csv';
             link.click();
+        }
+
+        function useGPS() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const startLat = position.coords.latitude;
+                        const startLon = position.coords.longitude;
+
+                        let endLat = prompt("Zadejte šířku cíle (latitude):");
+                        let endLon = prompt("Zadejte délku cíle (longitude):");
+
+                        if (endLat && endLon) {
+                            endLat = parseFloat(endLat);
+                            endLon = parseFloat(endLon);
+                            const distance = calculateDistance(startLat, startLon, endLat, endLon);
+                            document.getElementById('startOdometer').value = lastOdometer;
+                            document.getElementById('endOdometer').value = (lastOdometer + distance).toFixed(2);
+                            localStorage.setItem('lastOdometer', (lastOdometer + distance).toFixed(2));
+                        } else {
+                            alert("Zadejte platné souřadnice!");
+                        }
+                    },
+                    () => {
+                        alert("Geolokace není povolena nebo není dostupná!");
+                    }
+                );
+            } else {
+                alert("Váš prohlížeč nepodporuje geolokaci!");
+            }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            // Přibližný výpočet vzdálenosti pomocí Haversinova vzorce (v kilometrech)
+            const R = 6371; // Poloměr Země v kilometrech
+            const dLat = toRad(lat2 - lat1);
+            const dLon = toRad(lon2 - lon1);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+            return distance;
+        }
+
+        function toRad(degrees) {
+            return degrees * Math.PI / 180;
         }
 
         window.onload = renderTable;
