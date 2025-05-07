@@ -3,290 +3,1661 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveTrack</title>
+    <title>DriveTrack Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffe6e6;
-            color: #333;
+        :root {
+            --primary: #5d34af;
+            --primary-light: #7e57c2;
+            --primary-dark: #4527a0;
+            --secondary: #ff3d71;
+            --secondary-light: #ff6c9f;
+            --secondary-dark: #d81b60;
+            --success: #00d68f;
+            --info: #0095ff;
+            --warning: #ffaa00;
+            --danger: #ff3d71;
+            --background: #f7f9fc;
+            --card: #ffffff;
+            --text: #222b45;
+            --text-secondary: #8f9bb3;
+            --border: #edf1f7;
+            --border-radius: 12px;
+            --shadow: 0 8px 20px rgba(143, 155, 179, 0.16);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --font-primary: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            transition: var(--transition);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
             padding: 20px;
         }
-
+        
         header {
             text-align: center;
+            padding: 40px 0 30px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff20" fill-opacity="0.15" d="M0,160L48,144C96,128,192,96,288,101.3C384,107,480,149,576,165.3C672,181,768,171,864,186.7C960,203,1056,245,1152,234.7C1248,224,1344,160,1392,128L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.6;
+        }
+        
+        .logo {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin: 0;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .logo span {
+            color: var(--secondary-light);
+            font-weight: 900;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-top: 8px;
+            position: relative;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        @media (min-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+        
+        .card {
+            background: var(--card);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(143, 155, 179, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .card h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
             margin-bottom: 20px;
         }
-
-        .logo {
-            font-size: 36px;
-            font-weight: bold;
-            color: #ff3366;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        
+        .card h2 i {
+            margin-right: 12px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 24px;
         }
-
-        .logo span {
-            color: #e6004c;
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
         }
-
-        .tagline {
-            font-size: 16px;
-            color: #666;
-        }
-
-        .form {
-            max-width: 400px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .form input, .form button, .form select {
-            width: 100%;
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .form button {
-            background: #ff3366;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-
-        .form button:hover {
-            background: #e6004c;
-        }
-
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-
-        table th {
-            background: #ffcccc;
-        }
-
-        .export-btn {
+        
+        .form-label {
             display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+        
+        .form-control {
             width: 100%;
-            margin: 20px auto;
-            background: #ff3366;
-            color: #fff;
-            border: none;
-            padding: 10px;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
             font-size: 16px;
-            border-radius: 5px;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background-color: var(--card);
+            color: var(--text);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-light);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(93, 52, 175, 0.1);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+        
+        select.form-control {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%238f9bb3"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 22px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
-        .export-btn:hover {
-            background: #e6004c;
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.0) 100%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
         }
-
-        #stats {
-            margin-top: 20px;
-            text-align: center;
+        
+        .btn:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--info), var(--info));
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), var(--danger));
+        }
+        
+        .btn i {
+            margin-right: 10px;
             font-size: 18px;
         }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(143, 155, 179, 0.1);
+            transition: var(--transition);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(143, 155, 179, 0.15);
+        }
+        
+        .stat-card h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .stat-card p {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 50%;
+            background: rgba(93, 52, 175, 0.1);
+            color: var(--primary);
+        }
+        
+        .chart-container {
+            height: 350px;
+            margin: 25px 0;
+            padding: 15px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(143, 155, 179, 0.1);
+            border: 1px solid var(--border);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .edit-btn {
+            background: var(--warning);
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+        }
+        
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        
+        .action-dropdown {
+            position: relative;
+            flex: 1;
+            min-width: 180px;
+            max-width: 200px;
+        }
+        
+        .action-dropdown select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%238f9bb3"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
+        .action-dropdown select:focus {
+            border-color: var(--primary-light);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(93, 52, 175, 0.1);
+        }
+        
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            cursor: pointer;
+        }
+        
+        .toggle-label {
+            margin-right: 12px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e4e9f2;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        .responsive-table {
+            overflow-x: auto;
+            margin: 10px 0;
+            border-radius: var(--border-radius);
+            background: white;
+            border: 1px solid var(--border);
+            box-shadow: 0 5px 15px rgba(143, 155, 179, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table th, table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        table th {
+            font-weight: 600;
+            color: var(--primary);
+            background: rgba(93, 52, 175, 0.05);
+            position: sticky;
+            top: 0;
+        }
+        
+        table tr:nth-child(even) {
+            background-color: rgba(247, 249, 252, 0.5);
+        }
+        
+        table tr:hover {
+            background-color: rgba(93, 52, 175, 0.03);
+        }
+        
+        table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1;
+        }
+        
+        .badge-personal {
+            background-color: rgba(0, 214, 143, 0.15);
+            color: var(--success);
+        }
+        
+        .badge-work {
+            background-color: rgba(0, 149, 255, 0.15);
+            color: var(--info);
+        }
+        
+        .badge-other {
+            background-color: rgba(143, 155, 179, 0.15);
+            color: var(--text-secondary);
+        }
+        
+        .cost-value {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .fuel-icon {
+            margin-right: 8px;
+            color: var(--secondary);
+        }
+        
+        .distance-value {
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #d0d9e9;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        
+        .export-btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .export-btn:hover {
+            border-color: var(--primary-light);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .export-btn i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                background: white;
+            }
+            
+            .card, .stat-card, .chart-container, .responsive-table {
+                box-shadow: none;
+                border: 1px solid #eee;
+            }
+            
+            header {
+                background: white;
+                color: black;
+                box-shadow: none;
+            }
+            
+            header::before {
+                display: none;
+            }
+            
+            .logo {
+                color: var(--primary);
+            }
+        }
+        
+        body.dark-mode {
+            --primary: #9f74ff;
+            --primary-light: #b794f6;
+            --primary-dark: #7c4dff;
+            --secondary: #ff5c8d;
+            --secondary-light: #ff8db3;
+            --secondary-dark: #d63384;
+            --success: #00e5a1;
+            --info: #4db8ff;
+            --warning: #ffcc00;
+            --danger: #ff5c8d;
+            --background: #151a30;
+            --card: #222b45;
+            --text: #edf1f7;
+            --text-secondary: #b0b8cc;
+            --border: #323c5d;
+        }
+        
+        body.dark-mode .chart-container,
+        body.dark-mode .responsive-table,
+        body.dark-mode .stat-card {
+            background: var(--card);
+            border-color: var(--border);
+        }
+        
+        body.dark-mode table th {
+            background: rgba(159, 116, 255, 0.15);
+        }
+        
+        body.dark-mode table tr:nth-child(even) {
+            background-color: rgba(34, 43, 69, 0.5);
+        }
+        
+        body.dark-mode table tr:hover {
+            background-color: rgba(159, 116, 255, 0.1);
+        }
+        
+        body.dark-mode .export-btn,
+        body.dark-mode .action-dropdown select {
+            background-color: var(--card);
+            border-color: var(--border);
+            color: var(--text);
+        }
+        
+        .feature-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(255, 61, 113, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            margin-bottom: 25px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tab-btn.active {
+            color: var(--primary);
+        }
+        
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: var(--transition);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(93, 52, 175, 0.1);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Animace přidání nového záznamu */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--text);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            font-weight: normal;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--text) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Animovaná ikona */
+        .animated-icon {
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Doplňující barvy pro kategorii */
+        .personal-color { color: var(--success); }
+        .work-color { color: var(--info); }
+        .other-color { color: var(--text-secondary); }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">Drive<span>Track</span></div>
-        <div class="tagline">Váš osobní sledovač kilometrů</div>
-    </header>
-
-    <div class="form">
-        <input type="number" id="startOdometer" placeholder="Stav kilometrů před jízdou" required>
-        <input type="number" id="endOdometer" placeholder="Stav kilometrů po jízdě" required>
-        <input type="date" id="date" required>
-        <button onclick="useGPS()">Použít GPS</button>
-        <input type="number" id="fuelPrice" placeholder="Cena paliva za litr (Kč)" step="0.01">
-        <input type="number" id="fuelConsumption" placeholder="Spotřeba (l/100km)" step="0.1">
-        <button onclick="addEntry()">Přidat jízdu</button>
+    <div class="container">
+        <header>
+            <h1 class="logo">Drive<span>Track</span></h1>
+            <div class="tagline">Profesionální sledování vašich jízd</div>
+            <div class="feature-badge">Premium</div>
+        </header>
+        
+        <div class="top-actions">
+            <button class="export-btn" onclick="exportToPDF()">
+                <i class="fas fa-file-pdf"></i> Export PDF
+            </button>
+            <button class="export-btn" onclick="exportToCSV()">
+                <i class="fas fa-file-csv"></i> Export CSV
+            </button>
+            <div class="action-dropdown">
+                <select id="yearFilter" class="form-control">
+                    <option value="all">Všechny roky</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+            <div class="toggle-switch">
+                <span class="toggle-label">Tmavý režim</span>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="overview">
+                <i class="fas fa-chart-line"></i> Přehled
+            </button>
+            <button class="tab-btn" data-tab="new-ride">
+                <i class="fas fa-plus-circle"></i> Nová jízda
+            </button>
+            <button class="tab-btn" data-tab="statistics">
+                <i class="fas fa-chart-pie"></i> Statistiky
+            </button>
+            <div class="tab-indicator" style="width: 33.33%; left: 0;"></div>
+        </div>
+        
+        <div class="tab-content active" id="overview">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-road"></i></div>
+                    <h3>Celkem ujeto</h3>
+                    <p id="totalDistance">0 km</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-gas-pump"></i></div>
+                    <h3>Celkové náklady</h3>
+                    <p id="totalCost">0 Kč</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <h3>Prům. vzdálenost</h3>
+                    <p id="avgDistance">0 km</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                    <h3>Prům. náklady</h3>
+                    <p id="avgCost">0 Kč</p>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="distanceChart"></canvas>
+            </div>
+            
+            <div class="filter-container">
+                <span class="filter-label">Filtrovat:</span>
+                <div class="action-dropdown">
+                    <select id="monthFilter" class="form-control">
+                        <option value="all">Všechny měsíce</option>
+                        <option value="01">Leden</option>
+                        <option value="02">Únor</option>
+                        <option value="03">Březen</option>
+                        <option value="04">Duben</option>
+                        <option value="05">Květen</option>
+                        <option value="06">Červen</option>
+                        <option value="07">Červenec</option>
+                        <option value="08">Srpen</option>
+                        <option value="09">Září</option>
+                        <option value="10">Říjen</option>
+                        <option value="11">Listopad</option>
+                        <option value="12">Prosinec</option>
+                    </select>
+                </div>
+                <div class="action-dropdown">
+                    <select id="categoryFilter" class="form-control">
+                        <option value="all">Všechny kategorie</option>
+                        <option value="personal">Osobní</option>
+                        <option value="work">Pracovní</option>
+                        <option value="other">Jiné</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="responsive-table">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Kategorie</th>
+                            <th>Ujeté km</th>
+                            <th>Náklady</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rideTableBody">
+                        <!-- Data se přidají dynamicky -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="empty-state">
+                    <i class="fas fa-car"></i>
+                    <h3>Zatím žádné jízdy</h3>
+                    <p>Přidejte svou první jízdu pomocí formuláře</p>
+                </div>
+                <div id="dataLoader" class="loader"></div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="new-ride">
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Přidat novou jízdu</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Datum jízdy</label>
+                    <input type="date" id="date" class="form-control" required value="">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Stav kilometrů před jízdou</label>
+                    <div class="tooltip">
+                        <input type="number" id="startOdometer" class="form-control" placeholder="Např. 45380" required>
+                        <span class="tooltip-text">Zadejte stav tachometru před započetím jízdy</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Stav kilometrů po jízdě</label>
+                    <div class="tooltip">
+                        <input type="number" id="endOdometer" class="form-control" placeholder="Např. 45430" required>
+                        <span class="tooltip-text">Zadejte stav tachometru po dokončení jízdy</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Kategorie jízdy</label>
+                    <select id="category" class="form-control">
+                        <option value="personal">Osobní</option>
+                        <option value="work">Pracovní</option>
+                        <option value="other">Jiné</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Cena paliva za litr (Kč)</label>
+                    <input type="number" id="fuelPrice" class="form-control" placeholder="Např. 35.50" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Spotřeba (l/100km)</label>
+                    <input type="number" id="fuelConsumption" class="form-control" placeholder="Např. 6.5" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="addEntry()">
+                        <i class="fas fa-check-circle"></i> Přidat jízdu
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn btn-secondary" onclick="useGPS()">
+                        <i class="fas fa-map-marker-alt"></i> Použít GPS
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="statistics">
+            <div class="card">
+                <h2><i class="fas fa-chart-pie"></i> Podrobné statistiky</h2>
+                
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-user personal-color"></i></div>
+                        <h3>Osobní jízdy</h3>
+                        <p id="personalDistance">0 km</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-briefcase work-color"></i></div>
+                        <h3>Pracovní jízdy</h3>
+                        <p id="workDistance">0 km</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-question-circle other-color"></i></div>
+                        <h3>Jiné jízdy</h3>
+                        <p id="otherDistance">0 km</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <h3>Celkem jízd</h3>
+                        <p id="totalRides">0</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>Datum</th>
-                <th>Ujeté kilometry</th>
-                <th>Náklady (Kč)</th>
-                <th>Akce</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Záznamy budou dynamicky přidávány -->
-        </tbody>
-    </table>
-    <button class="export-btn" onclick="exportToCSV()">Export do Numbers (CSV)</button>
 
-    <div id="stats">
-        <p>Celkem ujeté kilometry: 0 km</p>
-        <p>Celkové náklady: 0 Kč</p>
-        <p>Průměrná vzdálenost na jízdu: 0 km</p>
-        <p>Průměrné náklady na jízdu: 0 Kč</p>
-    </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script>
         let rides = JSON.parse(localStorage.getItem('rides')) || {};
         let lastOdometer = parseFloat(localStorage.getItem('lastOdometer')) || 0;
-
+        let distanceChart = null;
+        let categoryChart = null;
+        let monthlyChart = null;
+        
+        // Inicializace aplikace
+        document.addEventListener('DOMContentLoaded', function() {
+            // Nastavení dnešního data
+            document.getElementById('date').valueAsDate = new Date();
+            
+            // Nastavení poslední hodnoty tachometru
+            document.getElementById('startOdometer').value = lastOdometer;
+            
+            // Inicializovat tabovou navigaci
+            initTabs();
+            
+            // Nastavení posluchačů událostí
+            document.getElementById('monthFilter').addEventListener('change', renderTable);
+            document.getElementById('categoryFilter').addEventListener('change', renderTable);
+            document.getElementById('yearFilter').addEventListener('change', renderTable);
+            
+            // Přepínač tmavého režimu
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+            
+            darkModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('darkMode', null);
+                }
+                updateCharts();
+            });
+            
+            // Načíst data
+            renderTable();
+            
+            // Nastavit statistiky
+            renderStatistics();
+        });
+        
+        function initTabs() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabIndicator = document.querySelector('.tab-indicator');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Odstranit aktivní třídu ze všech tlačítek a obsahů
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Přidat aktivní třídu na kliknuté tlačítko a odpovídající obsah
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Přesunout indikátor na aktivní tab
+                    const index = Array.from(tabButtons).indexOf(button);
+                    const width = 100 / tabButtons.length;
+                    tabIndicator.style.width = width + '%';
+                    tabIndicator.style.left = (index * width) + '%';
+                });
+            });
+        }
+        
         function addEntry() {
             const startOdometer = parseFloat(document.getElementById('startOdometer').value);
             const endOdometer = parseFloat(document.getElementById('endOdometer').value);
             const date = document.getElementById('date').value;
+            const category = document.getElementById('category').value;
             const fuelPrice = parseFloat(document.getElementById('fuelPrice').value) || 0;
             const fuelConsumption = parseFloat(document.getElementById('fuelConsumption').value) || 0;
-
+            
             if (isNaN(startOdometer) || isNaN(endOdometer) || !date || endOdometer <= startOdometer) {
-                alert('Vyplňte správně všechna pole!');
+                showNotification('Chyba', 'Vyplňte správně všechna pole!', 'error');
                 return;
             }
-
+            
             const distance = endOdometer - startOdometer;
-            const cost = (distance / 100) * fuelConsumption * fuelPrice; // Výpočet nákladů
-
+            const cost = (distance / 100) * fuelConsumption * fuelPrice;
+            
             if (!rides[date]) {
-                rides[date] = { distance: 0, cost: 0 };
+                rides[date] = [];
             }
-            rides[date].distance += distance;
-            rides[date].cost += cost;
-
+            
+            rides[date].push({
+                distance: distance,
+                cost: cost,
+                category: category,
+                startOdometer: startOdometer,
+                endOdometer: endOdometer,
+                fuelPrice: fuelPrice,
+                fuelConsumption: fuelConsumption,
+                timestamp: new Date().getTime()
+            });
+            
             localStorage.setItem('rides', JSON.stringify(rides));
             localStorage.setItem('lastOdometer', endOdometer);
+            
+            document.getElementById('startOdometer').value = endOdometer;
+            document.getElementById('endOdometer').value = '';
+            
+            // Zobrazit notifikaci
+            showNotification('Úspěch', 'Jízda byla úspěšně přidána!', 'success');
+            
+            // Přepnout na přehled
+            document.querySelector('.tab-btn[data-tab="overview"]').click();
+            
             renderTable();
+            renderStatistics();
         }
-
+        
+        function showNotification(title, message, type) {
+            // Jednoduchá implementace notifikace pomocí alertu
+            // V reálné aplikaci bychom použili hezčí notifikaci
+            alert(title + ': ' + message);
+        }
+        
         function renderTable() {
-            const tableBody = document.querySelector('#dataTable tbody');
+            const tableBody = document.getElementById('rideTableBody');
+            const emptyState = document.getElementById('emptyState');
             tableBody.innerHTML = '';
-
-            for (const [date, data] of Object.entries(rides)) {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${date}</td>
-                    <td>${data.distance.toFixed(2)} km</td>
-                    <td>${data.cost.toFixed(2)} Kč</td>
-                    <td>
-                        <button onclick="editEntry('${date}')">Upravit</button>
-                        <button onclick="deleteEntry('${date}')">Smazat</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
+            
+            const monthFilter = document.getElementById('monthFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const yearFilter = document.getElementById('yearFilter').value;
+            
+            let filteredRides = {};
+            let totalEntries = 0;
+            
+            for (const [date, rideArray] of Object.entries(rides)) {
+                if (monthFilter !== 'all' && !date.includes('-' + monthFilter + '-')) {
+                    continue;
+                }
+                
+                if (yearFilter !== 'all' && !date.includes(yearFilter + '-')) {
+                    continue;
+                }
+                
+                const filteredRideArray = rideArray.filter(ride => 
+                    categoryFilter === 'all' || ride.category === categoryFilter
+                );
+                
+                if (filteredRideArray.length > 0) {
+                    filteredRides[date] = filteredRideArray;
+                    totalEntries += filteredRideArray.length;
+                }
             }
-
+            
+            // Řazení podle data (nejnovější nahoře)
+            const sortedDates = Object.keys(filteredRides).sort().reverse();
+            
+            if (totalEntries === 0) {
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                
+                for (const date of sortedDates) {
+                    const rideArray = filteredRides[date];
+                    
+                    for (let i = 0; i < rideArray.length; i++) {
+                        const ride = rideArray[i];
+                        const formattedDate = new Date(date).toLocaleDateString('cs-CZ');
+                        
+                        const row = document.createElement('tr');
+                        row.className = 'fade-in';
+                        
+                        // Kategorie s ikonou a styl
+                        let categoryBadge = '';
+                        
+                        if (ride.category === 'personal') {
+                            categoryBadge = '<span class="category-badge badge-personal"><i class="fas fa-user"></i> Osobní</span>';
+                        } else if (ride.category === 'work') {
+                            categoryBadge = '<span class="category-badge badge-work"><i class="fas fa-briefcase"></i> Pracovní</span>';
+                        } else {
+                            categoryBadge = '<span class="category-badge badge-other"><i class="fas fa-question-circle"></i> Jiné</span>';
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${formattedDate}</td>
+                            <td>${categoryBadge}</td>
+                            <td class="distance-value">${ride.distance.toFixed(1)} km</td>
+                            <td class="cost-value"><i class="fas fa-gas-pump fuel-icon"></i>${ride.cost.toFixed(0)} Kč</td>
+                            <td class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editEntry('${date}', ${i})" title="Upravit"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn delete-btn" onclick="deleteEntry('${date}', ${i})" title="Smazat"><i class="fas fa-trash"></i></button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    }
+                }
+            }
+            
             calculateStats();
+            updateCharts();
         }
-
-        function deleteEntry(date) {
-            delete rides[date];
-            localStorage.setItem('rides', JSON.stringify(rides));
-            renderTable();
-        }
-
-        function editEntry(date) {
-            document.getElementById('startOdometer').value = rides[date].distance > 0 ? (lastOdometer - rides[date].distance) : '';
-            document.getElementById('endOdometer').value = lastOdometer;
-            document.getElementById('date').value = date;
-            document.getElementById('fuelPrice').value = '';
-            document.getElementById('fuelConsumption').value = '';
-
-            delete rides[date];
-            localStorage.setItem('rides', JSON.stringify(rides));
-            renderTable();
-        }
-
+        
         function calculateStats() {
-            const totalDistance = Object.values(rides).reduce((sum, data) => sum + data.distance, 0);
-            const totalCost = Object.values(rides).reduce((sum, data) => sum + data.cost, 0);
-            const rideCount = Object.keys(rides).length;
-            const averageDistance = rideCount > 0 ? (totalDistance / rideCount).toFixed(2) : 0;
-            const averageCost = rideCount > 0 ? (totalCost / rideCount).toFixed(2) : 0;
-
-            document.getElementById('stats').innerHTML = `
-                <p>Celkem ujeté kilometry: ${totalDistance.toFixed(2)} km</p>
-                <p>Celkové náklady: ${totalCost.toFixed(2)} Kč</p>
-                <p>Průměrná vzdálenost na jízdu: ${averageDistance} km</p>
-                <p>Průměrné náklady na jízdu: ${averageCost} Kč</p>
-            `;
-        }
-
-        function exportToCSV() {
-            let csvContent = 'Datum,Ujeté kilometry,Náklady (Kč)\n';
-
-            for (const [date, data] of Object.entries(rides)) {
-                csvContent += `${date},${data.distance.toFixed(2)},${data.cost.toFixed(2)}\n`;
+            const monthFilter = document.getElementById('monthFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const yearFilter = document.getElementById('yearFilter').value;
+            
+            let totalDistance = 0;
+            let totalCost = 0;
+            let rideCount = 0;
+            
+            for (const [date, rideArray] of Object.entries(rides)) {
+                if (monthFilter !== 'all' && !date.includes('-' + monthFilter + '-')) {
+                    continue;
+                }
+                
+                if (yearFilter !== 'all' && !date.includes(yearFilter + '-')) {
+                    continue;
+                }
+                
+                for (const ride of rideArray) {
+                    if (categoryFilter === 'all' || ride.category === categoryFilter) {
+                        totalDistance += ride.distance;
+                        totalCost += ride.cost;
+                        rideCount++;
+                    }
+                }
             }
-
+            
+            const averageDistance = rideCount > 0 ? totalDistance / rideCount : 0;
+            const averageCost = rideCount > 0 ? totalCost / rideCount : 0;
+            
+            document.getElementById('totalDistance').textContent = totalDistance.toFixed(1) + ' km';
+            document.getElementById('totalCost').textContent = totalCost.toFixed(0) + ' Kč';
+            document.getElementById('avgDistance').textContent = averageDistance.toFixed(1) + ' km';
+            document.getElementById('avgCost').textContent = averageCost.toFixed(0) + ' Kč';
+        }
+        
+        function updateCharts() {
+            const ctx = document.getElementById('distanceChart').getContext('2d');
+            
+            // Příprava dat pro graf - posledních 7 záznamů
+            const sortedDates = Object.keys(rides).sort();
+            const recentDates = sortedDates.slice(-7);
+            
+            const labels = [];
+            const distanceData = [];
+            const costData = [];
+            
+            for (const date of recentDates) {
+                const totalDistance = rides[date].reduce((sum, ride) => sum + ride.distance, 0);
+                const totalCost = rides[date].reduce((sum, ride) => sum + ride.cost, 0);
+                
+                const formattedDate = new Date(date).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' });
+                labels.push(formattedDate);
+                distanceData.push(totalDistance);
+                costData.push(totalCost);
+            }
+            
+            // Barvy v závislosti na režimu
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDarkMode ? '#b0b8cc' : '#8f9bb3';
+            
+            // Zrušení předchozího grafu, pokud existuje
+            if (distanceChart) {
+                distanceChart.destroy();
+            }
+            
+            // Vytvoření nového grafu
+            distanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Ujeté kilometry',
+                            data: distanceData,
+                            backgroundColor: 'rgba(93, 52, 175, 0.5)',
+                            borderColor: 'rgba(93, 52, 175, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Náklady (Kč)',
+                            data: costData,
+                            backgroundColor: 'rgba(255, 61, 113, 0.5)',
+                            borderColor: 'rgba(255, 61, 113, 1)',
+                            borderWidth: 1,
+                            type: 'line',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Kilometry',
+                                color: textColor
+                            },
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y1: {
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Kč',
+                                color: textColor
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Aktualizovat i další grafy, pokud existují
+            renderStatistics();
+        }
+        
+        function renderStatistics() {
+            // Kategorie grafy
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            
+            // Statistiky podle kategorií
+            let personalDistance = 0;
+            let workDistance = 0;
+            let otherDistance = 0;
+            let totalRides = 0;
+            
+            // Měsíční data
+            const monthlyData = Array(12).fill(0);
+            const monthlyLabels = [
+                'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+                'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'
+            ];
+            
+            for (const [date, rideArray] of Object.entries(rides)) {
+                // Extrahovat měsíc pro měsíční graf
+                const month = parseInt(date.split('-')[1]) - 1; // 0-indexed
+                
+                for (const ride of rideArray) {
+                    totalRides++;
+                    
+                    // Kategorie
+                    if (ride.category === 'personal') {
+                        personalDistance += ride.distance;
+                    } else if (ride.category === 'work') {
+                        workDistance += ride.distance;
+                    } else {
+                        otherDistance += ride.distance;
+                    }
+                    
+                    // Měsíční data
+                    monthlyData[month] += ride.distance;
+                }
+            }
+            
+            // Aktualizace statistik
+            document.getElementById('personalDistance').textContent = personalDistance.toFixed(1) + ' km';
+            document.getElementById('workDistance').textContent = workDistance.toFixed(1) + ' km';
+            document.getElementById('otherDistance').textContent = otherDistance.toFixed(1) + ' km';
+            document.getElementById('totalRides').textContent = totalRides;
+            
+            // Barvy v závislosti na režimu
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDarkMode ? '#b0b8cc' : '#8f9bb3';
+            
+            // Kategorie graf
+            if (categoryChart) {
+                categoryChart.destroy();
+            }
+            
+            categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Osobní', 'Pracovní', 'Jiné'],
+                    datasets: [{
+                        data: [personalDistance, workDistance, otherDistance],
+                        backgroundColor: [
+                            'rgba(0, 214, 143, 0.7)',
+                            'rgba(0, 149, 255, 0.7)',
+                            'rgba(143, 155, 179, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(0, 214, 143, 1)',
+                            'rgba(0, 149, 255, 1)',
+                            'rgba(143, 155, 179, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: textColor
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Rozdělení podle kategorií (km)',
+                            color: textColor
+                        }
+                    }
+                }
+            });
+            
+            // Měsíční graf
+            if (monthlyChart) {
+                monthlyChart.destroy();
+            }
+            
+            monthlyChart = new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: monthlyLabels,
+                    datasets: [{
+                        label: 'Kilometry za měsíc',
+                        data: monthlyData,
+                        fill: true,
+                        backgroundColor: 'rgba(93, 52, 175, 0.2)',
+                        borderColor: 'rgba(93, 52, 175, 1)',
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(93, 52, 175, 1)',
+                        pointBorderColor: '#fff',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Měsíční přehled ujetých kilometrů',
+                            color: textColor
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function deleteEntry(date, index) {
+            if (confirm('Opravdu chcete smazat tento záznam?')) {
+                rides[date].splice(index, 1);
+                
+                if (rides[date].length === 0) {
+                    delete rides[date];
+                }
+                
+                localStorage.setItem('rides', JSON.stringify(rides));
+                
+                // Zobrazit notifikaci
+                showNotification('Informace', 'Záznam byl smazán', 'info');
+                
+                renderTable();
+                renderStatistics();
+            }
+        }
+        
+        function editEntry(date, index) {
+            const ride = rides[date][index];
+            
+            document.getElementById('startOdometer').value = ride.startOdometer;
+            document.getElementById('endOdometer').value = ride.endOdometer;
+            document.getElementById('date').value = date;
+            document.getElementById('category').value = ride.category;
+            document.getElementById('fuelPrice').value = ride.fuelPrice;
+            document.getElementById('fuelConsumption').value = ride.fuelConsumption;
+            
+            // Přepnout na formulář
+            document.querySelector('.tab-btn[data-tab="new-ride"]').click();
+            
+            // Smazat původní záznam
+            deleteEntry(date, index);
+        }
+        
+        function exportToCSV() {
+            const monthFilter = document.getElementById('monthFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const yearFilter = document.getElementById('yearFilter').value;
+            
+            let csvContent = 'Datum,Kategorie,Ujeté kilometry,Náklady (Kč),Stav tachometru před,Stav tachometru po,Cena paliva,Spotřeba\n';
+            
+            for (const [date, rideArray] of Object.entries(rides)) {
+                if (monthFilter !== 'all' && !date.includes('-' + monthFilter + '-')) {
+                    continue;
+                }
+                
+                if (yearFilter !== 'all' && !date.includes(yearFilter + '-')) {
+                    continue;
+                }
+                
+                for (const ride of rideArray) {
+                    if (categoryFilter === 'all' || ride.category === categoryFilter) {
+                        const formattedDate = new Date(date).toLocaleDateString('cs-CZ');
+                        let categoryText = '';
+                        
+                        if (ride.category === 'personal') {
+                            categoryText = 'Osobní';
+                        } else if (ride.category === 'work') {
+                            categoryText = 'Pracovní';
+                        } else {
+                            categoryText = 'Jiné';
+                        }
+                        
+                        csvContent += `${formattedDate},${categoryText},${ride.distance.toFixed(1)},${ride.cost.toFixed(0)},${ride.startOdometer},${ride.endOdometer},${ride.fuelPrice},${ride.fuelConsumption}\n`;
+                    }
+                }
+            }
+            
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'kilometry.csv';
+            const today = new Date().toISOString().split('T')[0];
+            link.download = `DriveTrack_Export_${today}.csv`;
             link.click();
+            
+            showNotification('Export', 'Data byla úspěšně exportována do CSV', 'success');
         }
-
+        
+        function exportToPDF() {
+            window.print();
+            showNotification('Export', 'Příprava tisku PDF byla úspěšně dokončena', 'success');
+        }
+        
         function useGPS() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const startLat = position.coords.latitude;
                         const startLon = position.coords.longitude;
-
+                        
                         let endLat = prompt("Zadejte šířku cíle (latitude):");
                         let endLon = prompt("Zadejte délku cíle (longitude):");
-
+                        
                         if (endLat && endLon) {
                             endLat = parseFloat(endLat);
                             endLon = parseFloat(endLon);
                             const distance = calculateDistance(startLat, startLon, endLat, endLon);
                             document.getElementById('startOdometer').value = lastOdometer;
-                            document.getElementById('endOdometer').value = (lastOdometer + distance).toFixed(2);
-                            localStorage.setItem('lastOdometer', (lastOdometer + distance).toFixed(2));
+                            document.getElementById('endOdometer').value = (lastOdometer + distance).toFixed(1);
+                            
+                            showNotification('GPS', `Vzdálenost byla vypočítána: ${distance.toFixed(1)} km`, 'info');
                         } else {
-                            alert("Zadejte platné souřadnice!");
+                            showNotification('Chyba', 'Zadejte platné souřadnice!', 'error');
                         }
                     },
                     () => {
-                        alert("Geolokace není povolena nebo není dostupná!");
+                        showNotification('Chyba', 'Geolokace není povolena nebo není dostupná!', 'error');
                     }
                 );
             } else {
-                alert("Váš prohlížeč nepodporuje geolokaci!");
+                showNotification('Chyba', 'Váš prohlížeč nepodporuje geolokaci!', 'error');
             }
         }
-
+        
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            // Přibližný výpočet vzdálenosti pomocí Haversinova vzorce (v kilometrech)
-            const R = 6371; // Poloměr Země v kilometrech
+            const R = 6371;
             const dLat = toRad(lat2 - lat1);
             const dLon = toRad(lon2 - lon1);
             const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             const distance = R * c;
             return distance;
         }
-
+        
         function toRad(degrees) {
             return degrees * Math.PI / 180;
         }
-
-        window.onload = renderTable;
     </script>
 </body>
 </html>
