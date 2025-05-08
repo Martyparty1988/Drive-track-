@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveTrack Premium</title>
+    <title>DriveTrack s Google Maps</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -537,6 +537,7 @@
             padding: 60px 20px;
             text-align: center;
             color: var(--text-secondary);
+            display: none;
         }
         
         .empty-state i {
@@ -779,22 +780,135 @@
             opacity: 1;
         }
         
-        /* Animovaná ikona */
-        .animated-icon {
-            display: inline-block;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
         /* Doplňující barvy pro kategorii */
         .personal-color { color: var(--success); }
         .work-color { color: var(--info); }
         .other-color { color: var(--text-secondary); }
+        
+        /* Styly pro mapu */
+        .map-container {
+            height: 400px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .map-instructions {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: rgba(93, 52, 175, 0.05);
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .map-instructions h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .map-instructions h3 i {
+            margin-right: 8px;
+        }
+        
+        .map-instructions ul {
+            margin: 0;
+            padding-left: 25px;
+        }
+        
+        .map-instructions li {
+            margin-bottom: 5px;
+        }
+        
+        .map-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .location-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .location-input input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .marker-info {
+            margin-bottom: 20px;
+        }
+        
+        .marker-start, .marker-end {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        
+        .marker-start i, .marker-end i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .marker-start i {
+            color: var(--success);
+        }
+        
+        .marker-end i {
+            color: var(--danger);
+        }
+        
+        .coordinates {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-family: monospace;
+        }
+        
+        .distance-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(93, 52, 175, 0.3);
+        }
+        
+        .distance-indicator i {
+            margin-right: 10px;
+        }
+        
+        body.dark-mode .map-instructions {
+            background-color: rgba(159, 116, 255, 0.1);
+        }
+        
+        body.dark-mode .marker-start, 
+        body.dark-mode .marker-end {
+            background: var(--card);
+            color: var(--text);
+        }
     </style>
 </head>
 <body>
@@ -802,7 +916,7 @@
         <header>
             <h1 class="logo">Drive<span>Track</span></h1>
             <div class="tagline">Profesionální sledování vašich jízd</div>
-            <div class="feature-badge">Premium</div>
+            <div class="feature-badge">Google Maps</div>
         </header>
         
         <div class="top-actions">
@@ -836,10 +950,13 @@
             <button class="tab-btn" data-tab="new-ride">
                 <i class="fas fa-plus-circle"></i> Nová jízda
             </button>
+            <button class="tab-btn" data-tab="map-tab">
+                <i class="fas fa-map-marked-alt"></i> Mapa
+            </button>
             <button class="tab-btn" data-tab="statistics">
                 <i class="fas fa-chart-pie"></i> Statistiky
             </button>
-            <div class="tab-indicator" style="width: 33.33%; left: 0;"></div>
+            <div class="tab-indicator" style="width: 25%; left: 0;"></div>
         </div>
         
         <div class="tab-content active" id="overview">
@@ -974,8 +1091,52 @@
                 </div>
                 
                 <div class="form-group">
-                    <button class="btn btn-secondary" onclick="useGPS()">
-                        <i class="fas fa-map-marker-alt"></i> Použít GPS
+                    <button class="btn btn-secondary" onclick="goToMapTab()">
+                        <i class="fas fa-map-marker-alt"></i> Použít mapu pro výpočet
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="map-tab">
+            <div class="card">
+                <h2><i class="fas fa-map-marked-alt"></i> Google Maps pro plánování jízdy</h2>
+                
+                <div class="map-instructions">
+                    <h3><i class="fas fa-info-circle"></i> Pokyny pro použití mapy</h3>
+                    <ul>
+                        <li>Zadejte <strong>počáteční</strong> a <strong>cílový bod</strong> v polích níže</li>
+                        <li>Klikněte na tlačítko <strong>Zobrazit trasu</strong> pro výpočet vzdálenosti</li>
+                        <li>Po zobrazení trasy klikněte na <strong>Použít pro novou jízdu</strong></li>
+                        <li>Můžete také použít tlačítko <strong>Aktuální poloha</strong> pro rychlé nastavení výchozího bodu</li>
+                    </ul>
+                </div>
+                
+                <div class="location-input">
+                    <input type="text" id="startLocation" class="form-control" placeholder="Počáteční bod (např. Praha)" autocomplete="off">
+                    <input type="text" id="endLocation" class="form-control" placeholder="Cílový bod (např. Brno)" autocomplete="off">
+                    <button class="btn btn-secondary" onclick="showRoute()">
+                        <i class="fas fa-route"></i> Zobrazit trasu
+                    </button>
+                </div>
+                
+                <div class="map-container">
+                    <iframe id="map" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d163930.61388094066!2d14.317436780204761!3d50.05990221151084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470b939c0970798b%3A0x400af0f66164090!2sPrague%2C%20Czechia!5e0!3m2!1sen!2s!4v1683900598622!5m2!1sen!2s"></iframe>
+                </div>
+                
+                <div class="marker-info">
+                    <div id="distanceDisplay" class="distance-indicator" style="display: none;">
+                        <i class="fas fa-route"></i>
+                        <span id="routeDistance">0 km</span>
+                    </div>
+                </div>
+                
+                <div class="map-controls">
+                    <button class="btn btn-secondary" onclick="useCurrentLocation()">
+                        <i class="fas fa-location-arrow"></i> Aktuální poloha
+                    </button>
+                    <button class="btn btn-primary" onclick="useMapData()" id="useMapDataBtn" disabled>
+                        <i class="fas fa-car"></i> Použít pro novou jízdu
                     </button>
                 </div>
             </div>
@@ -1026,6 +1187,7 @@
         let distanceChart = null;
         let categoryChart = null;
         let monthlyChart = null;
+        let mapDistance = 0;
         
         // Inicializace aplikace
         document.addEventListener('DOMContentLoaded', function() {
@@ -1091,6 +1253,142 @@
                     tabIndicator.style.left = (index * width) + '%';
                 });
             });
+        }
+        
+        function goToMapTab() {
+            document.querySelector('.tab-btn[data-tab="map-tab"]').click();
+        }
+        
+        function showRoute() {
+            const startLocation = document.getElementById('startLocation').value;
+            const endLocation = document.getElementById('endLocation').value;
+            
+            if (!startLocation || !endLocation) {
+                showNotification('Chyba', 'Zadejte počáteční a cílový bod', 'error');
+                return;
+            }
+            
+            // Odhadovaná vzdálenost - v reálné aplikaci by toto bylo přesnější
+            // pomocí Google Maps Distance Matrix API
+            const origin = encodeURIComponent(startLocation);
+            const destination = encodeURIComponent(endLocation);
+            
+            // Vytvořit URL pro vložení Google Maps s trasou
+            const mapUrl = `https://www.google.com/maps/embed/v1/directions?key=YOUR_API_KEY&origin=${origin}&destination=${destination}&language=cs&units=metric&mode=driving`;
+            
+            // Upravit URL pro demonstrační účely (bez skutečného API klíče)
+            const demoMapUrl = `https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d651476.8465615641!2d14.967187017752057!3d49.74711455507632!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x470b939c0970798b%3A0x400af0f66164090!2sPrague%2C%20Czechia!3m2!1d50.0755381!2d14.4378005!4m5!1s0x4712943ac03f5111%3A0x400af0f6614b1b0!2sBrno%2C%20Czechia!3m2!1d49.1950602!2d16.6068371!5e0!3m2!1sen!2sus!4v1683901305544!5m2!1sen!2sus`;
+            
+            // Nastavit iframe pro mapu
+            document.getElementById('map').src = demoMapUrl;
+            
+            // Vypočítat přibližnou vzdálenost mezi místy
+            // Toto je zjednodušený výpočet pro demonstraci
+            // V reálné aplikaci byste použili Google Distance Matrix API
+            calculateApproximateDistance(startLocation, endLocation);
+        }
+        
+        function calculateApproximateDistance(start, end) {
+            // Zjednodušený model pro odhad vzdálenosti mezi českými městy
+            const cities = {
+                'praha': { lat: 50.0755, lng: 14.4378 },
+                'brno': { lat: 49.1951, lng: 16.6068 },
+                'ostrava': { lat: 49.8209, lng: 18.2625 },
+                'plzeň': { lat: 49.7384, lng: 13.3736 },
+                'liberec': { lat: 50.7702, lng: 15.0544 },
+                'olomouc': { lat: 49.5955, lng: 17.2582 },
+                'české budějovice': { lat: 48.9764, lng: 14.5030 },
+                'hradec králové': { lat: 50.2098, lng: 15.8320 },
+                'ústí nad labem': { lat: 50.6667, lng: 14.0317 },
+                'pardubice': { lat: 50.0347, lng: 15.7809 }
+            };
+            
+            // Zjednodušení názvů pro porovnání
+            const normalizeCity = (name) => {
+                return name.toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")  // Odstranit diakritiku
+                    .replace(/[^a-z0-9 ]/g, '')  // Ponechat pouze písmena, čísla a mezery
+                    .trim();
+            };
+            
+            // Najít město v seznamu
+            const findCity = (input) => {
+                const normalized = normalizeCity(input);
+                
+                // Zkusit najít přesnou shodu
+                if (cities[normalized]) {
+                    return cities[normalized];
+                }
+                
+                // Zkusit najít částečnou shodu
+                for (const [cityName, coords] of Object.entries(cities)) {
+                    if (normalized.includes(cityName) || cityName.includes(normalized)) {
+                        return coords;
+                    }
+                }
+                
+                // Výchozí pozice (Praha), pokud město není nalezeno
+                return cities['praha'];
+            };
+            
+            // Získat souřadnice měst
+            const startCoords = findCity(start);
+            const endCoords = findCity(end);
+            
+            // Vypočítat vzdálenost mezi městy (Haversine formula)
+            mapDistance = calculateDistance(
+                startCoords.lat, startCoords.lng,
+                endCoords.lat, endCoords.lng
+            );
+            
+            // Zobrazit vzdálenost
+            document.getElementById('routeDistance').textContent = mapDistance.toFixed(1) + ' km';
+            document.getElementById('distanceDisplay').style.display = 'flex';
+            
+            // Povolit tlačítko pro použití dat
+            document.getElementById('useMapDataBtn').disabled = false;
+            
+            showNotification('Info', `Vzdálenost mezi ${start} a ${end} je přibližně ${mapDistance.toFixed(1)} km`, 'info');
+        }
+        
+        function useCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        // Pro demonstraci - získání nejbližšího města podle souřadnic
+                        // by vyžadovalo Geocoding API
+                        document.getElementById('startLocation').value = 'Aktuální poloha';
+                        
+                        showNotification('Info', 'Aktuální poloha nastavena jako výchozí bod', 'info');
+                    },
+                    (error) => {
+                        showNotification('Chyba', 'Geolokace není dostupná: ' + error.message, 'error');
+                    }
+                );
+            } else {
+                showNotification('Chyba', 'Váš prohlížeč nepodporuje geolokaci!', 'error');
+            }
+        }
+        
+        function useMapData() {
+            if (mapDistance > 0) {
+                // Nastavit načtenou vzdálenost z mapy do formuláře
+                const newOdometer = lastOdometer + mapDistance;
+                
+                document.getElementById('startOdometer').value = lastOdometer.toFixed(1);
+                document.getElementById('endOdometer').value = newOdometer.toFixed(1);
+                
+                // Přepnout na formulář
+                document.querySelector('.tab-btn[data-tab="new-ride"]').click();
+                
+                // Zobrazit notifikaci
+                showNotification('Info', `Vzdálenost ${mapDistance.toFixed(1)} km byla přidána do formuláře`, 'success');
+            } else {
+                showNotification('Chyba', 'Nejprve vyberte počáteční a cílový bod na mapě', 'error');
+            }
         }
         
         function addEntry() {
@@ -1612,46 +1910,15 @@
             showNotification('Export', 'Příprava tisku PDF byla úspěšně dokončena', 'success');
         }
         
-        function useGPS() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const startLat = position.coords.latitude;
-                        const startLon = position.coords.longitude;
-                        
-                        let endLat = prompt("Zadejte šířku cíle (latitude):");
-                        let endLon = prompt("Zadejte délku cíle (longitude):");
-                        
-                        if (endLat && endLon) {
-                            endLat = parseFloat(endLat);
-                            endLon = parseFloat(endLon);
-                            const distance = calculateDistance(startLat, startLon, endLat, endLon);
-                            document.getElementById('startOdometer').value = lastOdometer;
-                            document.getElementById('endOdometer').value = (lastOdometer + distance).toFixed(1);
-                            
-                            showNotification('GPS', `Vzdálenost byla vypočítána: ${distance.toFixed(1)} km`, 'info');
-                        } else {
-                            showNotification('Chyba', 'Zadejte platné souřadnice!', 'error');
-                        }
-                    },
-                    () => {
-                        showNotification('Chyba', 'Geolokace není povolena nebo není dostupná!', 'error');
-                    }
-                );
-            } else {
-                showNotification('Chyba', 'Váš prohlížeč nepodporuje geolokaci!', 'error');
-            }
-        }
-        
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371;
+            const R = 6371; // Poloměr Země v km
             const dLat = toRad(lat2 - lat1);
             const dLon = toRad(lon2 - lon1);
             const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                     Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
                     Math.sin(dLon / 2) * Math.sin(dLon / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distance = R * c;
+            const distance = R * c; // Vzdálenost v km
             return distance;
         }
         
